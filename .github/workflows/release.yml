@@ -1,0 +1,62 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  release:
+    if: github.repository == 'tracedown/lacelang-kotlin-executor'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/checkout@v4
+        with:
+          repository: tracedown/lacelang-kt-validator
+          path: ../lacelang-kt-validator
+
+      - name: Read version
+        id: version
+        run: |
+          version=$(grep '^version' lace-executor.toml | head -1 | sed 's/.*= *"\(.*\)"/\1/')
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "tag=v$version" >> "$GITHUB_OUTPUT"
+
+      - name: Check if already released
+        id: check
+        run: |
+          if git rev-parse "${{ steps.version.outputs.tag }}" >/dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/setup-java@v4
+        if: steps.check.outputs.exists == 'false'
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Build shadow JAR
+        if: steps.check.outputs.exists == 'false'
+        run: ./gradlew shadowJar
+
+      - name: Create tag
+        if: steps.check.outputs.exists == 'false'
+        run: |
+          git tag "${{ steps.version.outputs.tag }}"
+          git push origin "${{ steps.version.outputs.tag }}"
+
+      - name: Create GitHub Release
+        if: steps.check.outputs.exists == 'false'
+        run: |
+          gh release create "${{ steps.version.outputs.tag }}" \
+            build/libs/lacelang-kt-executor-${{ steps.version.outputs.version }}-all.jar \
+            --title "lacelang-kt-executor ${{ steps.version.outputs.tag }}" \
+            --notes "Kotlin executor for Lace ${{ steps.version.outputs.tag }}. Spec conformance: 178/178 vectors."
+        env:
+          GH_TOKEN: ${{ github.token }}

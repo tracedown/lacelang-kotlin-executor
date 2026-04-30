@@ -1,0 +1,62 @@
+name: Conformance
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    if: github.repository == 'tracedown/lacelang-kt-executor' && !startsWith(github.event.pull_request.title, 'WIP:')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: tracedown/lacelang-kt-validator
+          path: ../lacelang-kt-validator
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - name: Build and test
+        run: ./gradlew build test
+
+  conformance:
+    needs: test
+    if: github.repository == 'tracedown/lacelang-kt-executor' && !startsWith(github.event.pull_request.title, 'WIP:')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: tracedown/lacelang-kt-validator
+          path: ../lacelang-kt-validator
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - name: Build shadow JAR
+        run: ./gradlew shadowJar
+      - name: Download conformance harness
+        run: |
+          gh release download testkit-v0.9.1 -R tracedown/lacelang -p 'lace-conformance-linux-x86_64'
+          chmod +x lace-conformance-linux-x86_64
+        env:
+          GH_TOKEN: ${{ github.token }}
+      - name: Clone lacelang spec repo (sparse)
+        run: |
+          git clone --depth 1 --filter=blob:none --sparse https://github.com/tracedown/lacelang.git ../lacelang
+          cd ../lacelang
+          git sparse-checkout set testkit/certs testkit/vectors extensions
+      - name: Generate TLS test certs
+        run: mkdir -p /tmp/lace-certs && sh ../lacelang/testkit/certs/generate-certs.sh /tmp/lace-certs
+      - name: Copy extension vectors into vectors tree
+        run: |
+          mkdir -p ../lacelang/testkit/vectors/_extensions
+          cp -r ../lacelang/extensions/default ../lacelang/testkit/vectors/_extensions/ 2>/dev/null || true
+          cp -r ../lacelang/extensions/test ../lacelang/testkit/vectors/_extensions/ 2>/dev/null || true
+          rm -rf ../lacelang/testkit/vectors/_extensions/default/laceBaseline/examples 2>/dev/null || true
+      - name: Run conformance suite
+        run: ./lace-conformance-linux-x86_64 -m lace-executor.toml --vectors ../lacelang/testkit/vectors --certs-dir /tmp/lace-certs
