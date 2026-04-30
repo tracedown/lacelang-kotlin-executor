@@ -52,11 +52,5 @@ jobs:
           git sparse-checkout set testkit/certs testkit/vectors extensions
       - name: Generate TLS test certs
         run: mkdir -p /tmp/lace-certs && sh lacelang/testkit/certs/generate-certs.sh /tmp/lace-certs
-      - name: Copy extension vectors into vectors tree
-        run: |
-          mkdir -p lacelang/testkit/vectors/_extensions
-          cp -r lacelang/extensions/default lacelang/testkit/vectors/_extensions/ 2>/dev/null || true
-          cp -r lacelang/extensions/test lacelang/testkit/vectors/_extensions/ 2>/dev/null || true
-          rm -rf lacelang/testkit/vectors/_extensions/default/laceBaseline/examples 2>/dev/null || true
       - name: Run conformance suite
-        run: ./lace-conformance-linux-x86_64 -m lace-executor.toml --vectors lacelang/testkit/vectors --certs-dir /tmp/lace-certs
+        run: ./lace-conformance-linux-x86_64 -m lace-executor.toml --vectors lacelang/testkit/vectors --extensions-dir lacelang/extensions --certs-dir /tmp/lace-certs
