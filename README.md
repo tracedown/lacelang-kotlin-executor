@@ -6,7 +6,7 @@ conformance vectors). Runs `.lace` scripts against real HTTP endpoints and
 emits ProbeResult JSON.
 
 Parsing and semantic validation are delegated to
-[`lacelang-kt-validator`](https://github.com/tracedown/lacelang-kt-validator) --
+[`lacelang-kt-validator`](https://github.com/tracedown/lacelang-kotlin-validator) --
 this package contains only the runtime (HTTP client, assertion evaluation, cookie
 jars, extension dispatch). See `lace-spec.md` section 15 for the validator /
 executor package separation rule.
@@ -19,7 +19,7 @@ Download the shadow JARs for both the validator and executor:
 
 ```bash
 # Download validator (required dependency)
-curl -sL "https://github.com/tracedown/lacelang-kt-validator/releases/latest/download/lacelang-kt-validator-0.1.0-all.jar" \
+curl -sL "https://github.com/tracedown/lacelang-kotlin-validator/releases/latest/download/lacelang-kt-validator-0.1.0-all.jar" \
     -o lacelang-kt-validator.jar
 
 # Download executor
@@ -38,7 +38,7 @@ is needed for CLI usage.
 Clone both repos side by side and build:
 
 ```bash
-git clone https://github.com/tracedown/lacelang-kt-validator.git
+git clone https://github.com/tracedown/lacelang-kotlin-validator.git
 git clone https://github.com/tracedown/lacelang-kt-executor.git
 cd lacelang-kt-executor
 ./gradlew shadowJar

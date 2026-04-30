@@ -15,7 +15,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/checkout@v4
         with:
-          repository: tracedown/lacelang-kt-validator
+          repository: tracedown/lacelang-kotlin-validator
           path: ../lacelang-kt-validator
       - uses: actions/setup-java@v4
         with:
