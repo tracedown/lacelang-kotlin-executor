@@ -1,0 +1,14 @@
+[executor]
+name        = "lacelang-kt-executor"
+version     = "0.1.0"
+language    = "kotlin"
+conforms_to = ">=0.9.1"
+
+[adapter]
+parse    = "java -jar build/libs/lacelang-kt-executor-0.1.0-all.jar parse {script}"
+validate = "java -jar build/libs/lacelang-kt-executor-0.1.0-all.jar validate {script} --vars-list {vars_list} --context {context}"
+run      = "java -jar build/libs/lacelang-kt-executor-0.1.0-all.jar run {script} --vars {vars} --prev {prev}"
+timeout_seconds = 30
+
+[adapter.env]
+LACE_BODIES_DIR = "/tmp/lace-bodies"
