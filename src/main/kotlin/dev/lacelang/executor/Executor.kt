@@ -19,7 +19,7 @@ import java.time.format.DateTimeFormatter
  * §4 (chain methods), §7 (execution model), §9 (ProbeResult wire format).
  */
 
-const val VERSION = "0.1.0"
+const val VERSION = "0.1.1"
 val DEFAULT_USER_AGENT = "lace-probe/$VERSION (lacelang-kotlin)"
 
 private const val DEFAULT_TIMEOUT_MS = 30_000
@@ -45,6 +45,7 @@ private val INTERP_RE = Regex(
 val BUILTIN_EXTENSIONS: Map<String, String> = mapOf(
     "laceNotifications" to "laceNotifications.laceext",
     "laceBaseline" to "laceBaseline.laceext",
+    "laceEmitRecovery" to "laceEmitRecovery.laceext",
     "notifCounter" to "notifCounter.laceext",
     "notifWatch" to "notifWatch.laceext",
     "notifRelay" to "notifRelay.laceext",
