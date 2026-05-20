@@ -43,7 +43,7 @@ changed semantics) must be proposed upstream in the spec repo first.
 | Suite | Command | Covers |
 |-------|---------|--------|
 | Unit | `./gradlew test` | Expression evaluator, extension DSL, config loader |
-| Conformance | `lace-conformance -m lace-executor.toml` | Full spec compliance (178 vectors) |
+| Conformance | `lace-conformance -m lace-executor.toml` | Full spec compliance |
 
 ## Version
 
