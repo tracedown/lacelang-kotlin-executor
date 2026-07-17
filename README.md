@@ -1,5 +1,7 @@
 # lacelang-executor (Kotlin)
 
+[![Maven Central](https://img.shields.io/maven-central/v/dev.lacelang/lacelang-kotlin-executor)](https://central.sonatype.com/artifact/dev.lacelang/lacelang-kotlin-executor)
+
 Reference Kotlin/JVM executor for [Lace](https://github.com/tracedown/lacelang) --
 the reference implementation with **100% spec conformance**. Runs `.lace` scripts against real HTTP endpoints and
 emits ProbeResult JSON.

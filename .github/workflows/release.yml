@@ -10,6 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      id-token: write        # build-provenance attestation (Sigstore OIDC)
+      attestations: write    # write the attestation to the repo
     steps:
       - uses: actions/checkout@v6
         with:
@@ -49,6 +51,44 @@ jobs:
           ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
           ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.SIGNING_KEY }}
           ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.SIGNING_PASSWORD }}
+
+      # Attest the published thin jar (same bytes Central serves as
+      # lacelang-kotlin-executor-<v>.jar). Registers the artifact digest with
+      # GitHub — a prerequisite for the storage record below.
+      - name: Attest build provenance
+        if: steps.check.outputs.exists == 'false'
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: build/libs/lacelang-kt-executor-${{ steps.version.outputs.version }}.jar
+
+      # Link the published artifact to the org's linked-artifacts page. Requires
+      # an org token with artifact-metadata write; skipped if it isn't set.
+      - name: Record storage location
+        if: steps.check.outputs.exists == 'false'
+        continue-on-error: true   # best-effort — the artifact is already published
+        env:
+          GH_TOKEN: ${{ secrets.ORG_ARTIFACT_METADATA_TOKEN }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          if [ -z "$GH_TOKEN" ]; then
+            echo "ORG_ARTIFACT_METADATA_TOKEN not set — skipping storage record."
+            exit 0
+          fi
+          jar="build/libs/lacelang-kt-executor-${VERSION}.jar"
+          digest=$(sha256sum "$jar" | cut -d' ' -f1)
+          for attempt in 1 2 3 4 5 6; do
+            if gh api -X POST /orgs/tracedown/artifacts/metadata/storage-record \
+                 -H "X-GitHub-Api-Version: 2026-03-10" \
+                 -f name="lacelang-kotlin-executor" \
+                 -f digest="sha256:${digest}" \
+                 -f registry_url="https://repo1.maven.org/maven2/dev/lacelang/lacelang-kotlin-executor/${VERSION}/lacelang-kotlin-executor-${VERSION}.jar"; then
+              echo "storage record created."
+              exit 0
+            fi
+            echo "attempt ${attempt}: digest not indexed yet — retrying in 30s"
+            sleep 30
+          done
+          echo "storage record not created after retries; artifact is published regardless."
 
       - name: Create tag
         if: steps.check.outputs.exists == 'false'
