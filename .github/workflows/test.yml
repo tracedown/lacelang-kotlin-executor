@@ -13,10 +13,6 @@ jobs:
         java-version: ["17", "21"]
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/checkout@v6
-        with:
-          repository: tracedown/lacelang-kotlin-validator
-          path: lacelang-kt-validator
       - uses: actions/setup-java@v4
         with:
           distribution: temurin

@@ -1,13 +1,13 @@
 [executor]
 name        = "lacelang-kt-executor"
-version     = "0.1.2"
+version     = "0.1.3"
 language    = "kotlin"
 conforms_to = ">=0.9.3"
 
 [adapter]
-parse    = "java -jar build/libs/lacelang-kt-executor-0.1.2-all.jar parse {script}"
-validate = "java -jar build/libs/lacelang-kt-executor-0.1.2-all.jar validate {script} --vars-list {vars_list} --context {context}"
-run      = "java -jar build/libs/lacelang-kt-executor-0.1.2-all.jar run {script} --vars {vars} --prev {prev}"
+parse    = "java -jar build/libs/lacelang-kt-executor-all.jar parse {script}"
+validate = "java -jar build/libs/lacelang-kt-executor-all.jar validate {script} --vars-list {vars_list} --context {context}"
+run      = "java -jar build/libs/lacelang-kt-executor-all.jar run {script} --vars {vars} --prev {prev}"
 timeout_seconds = 30
 
 [adapter.env]

@@ -19,7 +19,8 @@ import java.time.format.DateTimeFormatter
  * §4 (chain methods), §7 (execution model), §9 (ProbeResult wire format).
  */
 
-const val VERSION = "0.1.1"
+// VERSION is generated from gradle.properties into BuildInfo.kt (the
+// generateVersionInfo build task), so it never drifts from the released version.
 val DEFAULT_USER_AGENT = "lace-probe/$VERSION (lacelang-kotlin)"
 
 private const val DEFAULT_TIMEOUT_MS = 30_000

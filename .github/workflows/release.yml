@@ -14,15 +14,11 @@ jobs:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0
-      - uses: actions/checkout@v6
-        with:
-          repository: tracedown/lacelang-kotlin-validator
-          path: lacelang-kt-validator
 
       - name: Read version
         id: version
         run: |
-          version=$(grep '^version' lace-executor.toml | head -1 | sed 's/.*= *"\(.*\)"/\1/')
+          version=$(grep '^version=' gradle.properties | cut -d= -f2)
           echo "version=$version" >> "$GITHUB_OUTPUT"
           echo "tag=v$version" >> "$GITHUB_OUTPUT"
 
@@ -45,6 +41,15 @@ jobs:
         if: steps.check.outputs.exists == 'false'
         run: ./gradlew shadowJar
 
+      - name: Publish to Maven Central
+        if: steps.check.outputs.exists == 'false'
+        run: ./gradlew publishToMavenCentral --no-configuration-cache
+        env:
+          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.SIGNING_KEY }}
+          ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.SIGNING_PASSWORD }}
+
       - name: Create tag
         if: steps.check.outputs.exists == 'false'
         run: |
@@ -55,8 +60,8 @@ jobs:
         if: steps.check.outputs.exists == 'false'
         run: |
           gh release create "${{ steps.version.outputs.tag }}" \
-            build/libs/lacelang-kt-executor-${{ steps.version.outputs.version }}-all.jar \
-            --title "lacelang-kt-executor ${{ steps.version.outputs.tag }}" \
+            build/libs/lacelang-kt-executor-all.jar \
+            --title "Lace Kotlin Executor ${{ steps.version.outputs.tag }}" \
             --notes "Kotlin executor for Lace ${{ steps.version.outputs.tag }}. Spec conformance: 178/178 vectors."
         env:
           GH_TOKEN: ${{ github.token }}
