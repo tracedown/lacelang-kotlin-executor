@@ -83,7 +83,7 @@ mavenPublishing {
     publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL, automaticRelease = true)
     signAllPublications()
 
-    coordinates("dev.lacelang", "kotlin-executor", version.toString())
+    coordinates("dev.lacelang", "lacelang-kotlin-executor", version.toString())
 
     pom {
         name.set("Lace Kotlin Executor")
