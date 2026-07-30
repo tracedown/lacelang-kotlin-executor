@@ -923,8 +923,31 @@ private fun evalFunc(node: Map<String, Any?>, env: ExecutionEnv): Any? {
     val argsNodes = (node["args"] as? List<*>) ?: emptyList<Any?>()
     if (name in listOf("json", "form")) return if (argsNodes.isNotEmpty()) eval(argsNodes[0], env) else null
     if (name == "schema") { val v = if (argsNodes.isNotEmpty()) eval(argsNodes[0], env) else null; return mapOf("__lace_schema__" to true, "schema" to v) }
+    // Assert-only helpers (spec S8). The validator guarantees they appear only
+    // inside `.assert()` conditions, so no context check is needed here.
+    if (name == "count") {
+        val v = if (argsNodes.isNotEmpty()) eval(argsNodes[0], env) else null
+        return if (v is List<*>) v.size else 1
+    }
+    if (name == "includes") {
+        val search = if (argsNodes.isNotEmpty()) eval(argsNodes[0], env) else null
+        val target = if (argsNodes.size > 1) eval(argsNodes[1], env) else null
+        return rawString(target).contains(rawString(search))
+    }
     if (name in env.tagCtors) return env.tagCtors[name]!!(argsNodes.map { eval(it, env) })
     return null
+}
+
+/**
+ * Raw-string coercion for `includes` (spec S8). Strings pass through; null ->
+ * empty string; everything else (bool/number/array/object) -> compact JSON --
+ * which already yields `true`/`false` for booleans and bare digits for ints.
+ * Guard string + null BEFORE gson (gson quotes strings and emits `"null"`).
+ */
+private fun rawString(v: Any?): String = when {
+    v == null -> ""
+    v is String -> v
+    else -> gson.toJson(v)
 }
 
 private fun walkVarPath(value: Any?, path: List<Map<String, Any?>>?): Any? {

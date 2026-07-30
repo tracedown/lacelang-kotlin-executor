@@ -9,13 +9,16 @@ plugins {
 
 // group and version come from gradle.properties (single source of truth).
 
+// mavenLocal first so a locally-published validator (e.g. an unreleased spec
+// version) overrides the Central copy for local dev; CI without the local
+// artifact falls through to Central, the release source of truth.
 repositories {
     mavenLocal()
     mavenCentral()
 }
 
 dependencies {
-    implementation("dev.lacelang:kotlin-validator:0.1.3")
+    implementation("dev.lacelang:kotlin-validator:0.1.4")
     implementation("com.google.code.gson:gson:2.11.0")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("com.squareup.okhttp3:okhttp-tls:4.12.0")
