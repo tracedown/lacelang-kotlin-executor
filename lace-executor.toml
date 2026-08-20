@@ -1,8 +1,8 @@
 [executor]
 name        = "lacelang-kt-executor"
-version     = "0.1.5"
+version     = "0.1.6"
 language    = "kotlin"
-conforms_to = ">=0.9.5"
+conforms_to = ">=0.9.6"
 
 [adapter]
 parse    = "java -jar build/libs/lacelang-kt-executor-all.jar parse {script}"
