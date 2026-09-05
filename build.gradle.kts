@@ -16,7 +16,7 @@ repositories {
 }
 
 dependencies {
-    implementation("dev.lacelang:kotlin-validator:0.1.5")
+    implementation("dev.lacelang:kotlin-validator:0.1.6")
     implementation("com.google.code.gson:gson:2.14.0")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("com.squareup.okhttp3:okhttp-tls:4.12.0")
