@@ -86,7 +86,7 @@ val result = runScript(ast, scriptVars = mapOf("key" to "val"), config = config)
 
 | Dependency | Version | Purpose |
 |------------|---------|---------|
-| OkHttp | 4.12 | HTTP client with per-phase timing |
+| OkHttp | 5.5 | HTTP client with per-phase timing |
 | Gson | 2.11 | JSON serialization |
 | tomlj | 1.1.1 | TOML parsing (.laceext, lace.config) |
 

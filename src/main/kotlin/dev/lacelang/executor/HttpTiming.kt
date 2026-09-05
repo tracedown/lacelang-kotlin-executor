@@ -130,6 +130,13 @@ fun sendRequest(
         .cookieJar(CookieJar.NO_COOKIES)
         .connectionPool(ConnectionPool(0, 1, TimeUnit.MILLISECONDS))
         .protocols(listOf(Protocol.HTTP_1_1))
+        // OkHttp 5 turns fast fallback (Happy Eyeballs, RFC 8305) on by
+        // default: it races IPv4 and IPv6 connects and keeps whichever wins.
+        // That overlaps connectStart/connectEnd events for a dual-stack host,
+        // which makes the single connect phase this listener measures
+        // ill-defined. The probe reports one connectMs (spec §9), so keep the
+        // sequential one-attempt-at-a-time connect OkHttp 4 did.
+        .fastFallback(false)
         .eventListener(listener)
 
     if (!verifyTls) {
@@ -165,7 +172,9 @@ fun sendRequest(
 
     return try {
         val response = client.newCall(reqBuilder.build()).execute()
-        val responseBody = response.body?.bytes() ?: ByteArray(0)
+        // OkHttp 5: Response.body is non-null (an empty body is a zero-length
+        // ResponseBody, never null), so no null branch is needed here.
+        val responseBody = response.body.bytes()
         val tDone = System.nanoTime()
         timings.transferMs = maxOf(0, ((tDone - (listener.responseHeadersEndNanos ?: tDone)) / 1_000_000).toInt())
         timings.responseTimeMs = ((tDone - callStartNanos) / 1_000_000).toInt()

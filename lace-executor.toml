@@ -1,6 +1,6 @@
 [executor]
 name        = "lacelang-kt-executor"
-version     = "0.1.8"
+version     = "0.1.9"
 language    = "kotlin"
 conforms_to = ">=0.9.6"
 
