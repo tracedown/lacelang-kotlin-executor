@@ -18,8 +18,8 @@ repositories {
 dependencies {
     implementation("dev.lacelang:kotlin-validator:0.1.6")
     implementation("com.google.code.gson:gson:2.14.0")
-    implementation("com.squareup.okhttp3:okhttp:4.12.0")
-    implementation("com.squareup.okhttp3:okhttp-tls:4.12.0")
+    implementation("com.squareup.okhttp3:okhttp:5.5.0")
+    implementation("com.squareup.okhttp3:okhttp-tls:5.5.0")
     implementation("org.tomlj:tomlj:1.1.1")
     // tomlj's public API carries checkerframework TYPE_USE @Nullable annotations
     // but does not declare checker-qual, so the annotation class is off the
@@ -29,7 +29,7 @@ dependencies {
     compileOnly("org.checkerframework:checker-qual:3.49.5")
 
     testImplementation(kotlin("test"))
-    testImplementation("com.squareup.okhttp3:mockwebserver:4.12.0")
+    testImplementation("com.squareup.okhttp3:mockwebserver3:5.5.0")
 }
 
 application {
