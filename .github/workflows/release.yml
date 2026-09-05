@@ -13,7 +13,7 @@ jobs:
       id-token: write        # build-provenance attestation (Sigstore OIDC)
       attestations: write    # write the attestation to the repo
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -33,7 +33,7 @@ jobs:
             echo "exists=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v6
         if: steps.check.outputs.exists == 'false'
         with:
           distribution: temurin
@@ -57,7 +57,7 @@ jobs:
       # GitHub — a prerequisite for the storage record below.
       - name: Attest build provenance
         if: steps.check.outputs.exists == 'false'
-        uses: actions/attest-build-provenance@v2
+        uses: actions/attest-build-provenance@v4
         with:
           subject-path: build/libs/lacelang-kt-executor-${{ steps.version.outputs.version }}.jar
 

@@ -9,8 +9,8 @@ jobs:
     if: github.repository == 'tracedown/lacelang-kotlin-executor' && !startsWith(github.event.pull_request.title, 'WIP:')
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: "17"
@@ -22,8 +22,8 @@ jobs:
     if: github.repository == 'tracedown/lacelang-kotlin-executor' && !startsWith(github.event.pull_request.title, 'WIP:')
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: "17"
