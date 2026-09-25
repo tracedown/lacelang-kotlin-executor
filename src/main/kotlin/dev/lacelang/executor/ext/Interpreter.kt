@@ -189,8 +189,8 @@ class Interpreter(
         }
         val a = eval(node["left"] as Map<String, Any?>, scope)
         val b = eval(node["right"] as Map<String, Any?>, scope)
-        if (op == "eq") return a == b
-        if (op == "neq") return a != b
+        if (op == "eq") return dslEquals(a, b)
+        if (op == "neq") return !dslEquals(a, b)
         // arithmetic + ordered compare: null propagates
         if (a == null || b == null) return null
         return try {
@@ -257,6 +257,12 @@ class Interpreter(
         // Numeric helpers preserving int vs double
         private fun toDouble(v: Any): Double = (v as Number).toDouble()
         private fun toInt(v: Any): Int = (v as Number).toInt()
+    /** DSL equality (spec §5.3): numbers compare by value regardless of
+     *  representation — an Int from the executor equals the Double Gson
+     *  produces for the same JSON number in `prev`. */
+    private fun dslEquals(a: Any?, b: Any?): Boolean =
+        if (a is Number && b is Number) toDouble(a) == toDouble(b) else a == b
+
 
         private fun numCmp(a: Any, b: Any): Int? {
             if (a !is Number || b !is Number) return null
